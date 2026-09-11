@@ -1,0 +1,6 @@
+{
+  "name": "Aprende AI",
+  "description": "Generador de micro-aprendizajes gamificados con IA multimodal: cuestionarios interactivos, flashcards 3D con algoritmo SRS y mapa mental interactivo.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
