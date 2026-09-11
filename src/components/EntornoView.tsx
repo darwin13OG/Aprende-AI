@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 import { Entorno, Fuente, ActiveTab, ChatMessage } from '../types.ts';
 import {
   Sparkles,
@@ -83,10 +85,6 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
   const [apiKeyInput, setApiKeyInput] = useState(userApiKey);
   const [showKeyCard, setShowKeyCard] = useState(false);
 
-  // Rename Entorno inline
-  const [isEditingName, setIsEditingName] = useState(false);
-  const [nameInput, setNameInput] = useState(entorno.nombre);
-
   // File inputs
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
@@ -103,13 +101,6 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [entorno.chatMessages, subView, isSendingMessage]);
-
-  const handleSaveName = () => {
-    if (nameInput.trim()) {
-      onUpdateEntorno({ ...entorno, nombre: nameInput.trim() });
-    }
-    setIsEditingName(false);
-  };
 
   // Add a file source
   const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -352,12 +343,16 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
     setTimeout(() => setCopiedMessageId(null), 1500);
   };
 
-  // Render full markdown text: bold, italics, dividers, lists, code, quotes and math symbols
+  // Render full markdown text: bold, italics, dividers, lists, code, quotes and LaTeX math formulas (KaTeX)
   const renderMessageMarkdown = (content: string) => {
+    // Unescape any escaped dollar signs so LaTeX math like \$\alpha\$ or \$90^\circ\$ parses correctly as math
+    const sanitized = content.replace(/\\(\$)/g, '$');
+
     return (
-      <div className="space-y-2 text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-100">
+      <div className="space-y-2 text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-100 overflow-x-auto">
         <Markdown
-          remarkPlugins={[remarkGfm]}
+          remarkPlugins={[remarkGfm, remarkMath]}
+          rehypePlugins={[[rehypeKatex, { throwOnError: false, strict: false }]]}
           components={{
             p: ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
             strong: ({ children }) => <strong className="font-bold text-slate-950 dark:text-white">{children}</strong>,
@@ -407,7 +402,7 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
             ),
           }}
         >
-          {content}
+          {sanitized}
         </Markdown>
       </div>
     );
@@ -416,7 +411,7 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
   const messages = entorno.chatMessages || [];
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 pt-4 pb-28 space-y-4">
+    <div className="w-full max-w-3xl mx-auto px-3 sm:px-4 pt-3 sm:pt-4 pb-28 space-y-3 sm:space-y-4">
       {/* Hidden File Inputs */}
       <input
         ref={fileInputRef}
@@ -434,68 +429,48 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
         onChange={handleFileSelected}
       />
 
-      {/* Top Entorno Title & Sub-View Switcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-[#0d1526] p-3 sm:p-4 rounded-2xl border border-slate-200 dark:border-cyan-500/20 shadow-sm">
-        {/* Entorno Name with Inline Edit */}
-        <div className="flex items-center gap-2">
-          {isEditingName ? (
-            <div className="flex items-center gap-1.5">
-              <input
-                type="text"
-                value={nameInput}
-                onChange={(e) => setNameInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSaveName()}
-                className="px-2.5 py-1 rounded-xl bg-slate-50 dark:bg-[#070d1a] border border-blue-500 text-sm font-bold text-slate-900 dark:text-white focus:outline-none"
-                autoFocus
-              />
-              <button
-                type="button"
-                onClick={handleSaveName}
-                className="p-1.5 rounded-lg bg-blue-600 text-white text-xs hover:bg-blue-500"
-              >
-                <Check className="w-4 h-4" />
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 group cursor-pointer" onClick={() => setIsEditingName(true)}>
-              <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
-                {entorno.nombre}
-              </h2>
-              <Edit2 className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-500 transition" />
-            </div>
-          )}
+      {/* Top Entorno Header & Navigation Bar (Non-editable here, sleek and responsive) */}
+      <div className="flex items-center justify-between gap-2.5 px-2 py-2 sm:px-4 sm:py-2.5 rounded-2xl bg-white/70 dark:bg-[#0c1424]/70 backdrop-blur-md border border-slate-200/80 dark:border-cyan-500/20 shadow-sm">
+        {/* Entorno Title (Read-only; editing is done only in drawer) */}
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="w-2 h-2 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)] flex-shrink-0" />
+          <h2 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white tracking-tight truncate">
+            {entorno.nombre}
+          </h2>
         </div>
 
-        {/* Segmented Switch: Chat con Fuentes vs Gestión de Fuentes */}
-        <div className="flex items-center bg-slate-100 dark:bg-[#070d1a] p-1 rounded-xl border border-slate-200 dark:border-slate-800 self-start sm:self-auto">
+        {/* Sleek Segmented Switcher for Chat vs Fuentes */}
+        <div className="flex items-center bg-slate-100 dark:bg-[#070d1a] p-0.5 sm:p-1 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-cyan-500/25 flex-shrink-0">
           <button
             type="button"
             onClick={() => setSubView('chat')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition active:scale-95 ${
+            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-xs font-bold transition-all active:scale-95 ${
               subView === 'chat'
                 ? 'bg-white dark:bg-[#111c33] text-blue-600 dark:text-cyan-400 shadow-sm'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
+            title="Ver chat con fuentes"
           >
             <MessageSquare className="w-3.5 h-3.5" />
-            <span>Chat con Fuentes</span>
+            <span>Chat</span>
             {messages.length > 0 && (
-              <span className="w-2 h-2 rounded-full bg-blue-500 dark:bg-cyan-400 inline-block" />
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 dark:bg-cyan-400 inline-block" />
             )}
           </button>
 
           <button
             type="button"
             onClick={() => setSubView('fuentes')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition active:scale-95 ${
+            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-xs font-bold transition-all active:scale-95 ${
               subView === 'fuentes'
                 ? 'bg-white dark:bg-[#111c33] text-blue-600 dark:text-cyan-400 shadow-sm'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
+            title="Gestionar fuentes"
           >
             <FolderOpen className="w-3.5 h-3.5" />
             <span>Fuentes</span>
-            <span className="px-1.5 py-0.2 rounded-full bg-slate-200 dark:bg-slate-800 text-[10px] font-extrabold text-slate-700 dark:text-slate-300">
+            <span className="px-1.5 py-0.2 rounded-full bg-slate-200 dark:bg-slate-800 text-[10px] font-extrabold text-slate-700 dark:text-cyan-300">
               {entorno.fuentes.length}
             </span>
           </button>
