@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { Entorno, Fuente, ActiveTab, ChatMessage } from '../types.ts';
 import {
   Sparkles,
@@ -350,58 +352,65 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
     setTimeout(() => setCopiedMessageId(null), 1500);
   };
 
-  // Render markdown text with bolding and lists
+  // Render full markdown text: bold, italics, dividers, lists, code, quotes and math symbols
   const renderMessageMarkdown = (content: string) => {
-    const lines = content.split('\n');
     return (
-      <div className="space-y-1.5 text-xs sm:text-sm leading-relaxed">
-        {lines.map((line, idx) => {
-          if (!line.trim()) return <div key={idx} className="h-1" />;
-
-          // Bullet item
-          if (line.startsWith('* ') || line.startsWith('- ')) {
-            return (
-              <div key={idx} className="flex items-start gap-2 pl-2">
-                <span className="text-blue-500 dark:text-cyan-400 font-bold mt-0.5">•</span>
-                <span>{parseBold(line.substring(2))}</span>
+      <div className="space-y-2 text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-100">
+        <Markdown
+          remarkPlugins={[remarkGfm]}
+          components={{
+            p: ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
+            strong: ({ children }) => <strong className="font-bold text-slate-950 dark:text-white">{children}</strong>,
+            em: ({ children }) => <em className="italic text-cyan-700 dark:text-cyan-300 font-medium not-italic-brackets">{children}</em>,
+            ul: ({ children }) => <ul className="space-y-1 my-2 pl-4 list-disc marker:text-cyan-500">{children}</ul>,
+            ol: ({ children }) => <ol className="space-y-1 my-2 pl-4 list-decimal marker:text-blue-500 dark:marker:text-cyan-400 font-bold">{children}</ol>,
+            li: ({ children }) => <li className="pl-1 leading-relaxed font-normal">{children}</li>,
+            hr: () => <hr className="my-3 border-t border-slate-200 dark:border-cyan-500/20" />,
+            h1: ({ children }) => <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white mt-3 mb-1">{children}</h3>,
+            h2: ({ children }) => <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white mt-2.5 mb-1">{children}</h4>,
+            h3: ({ children }) => <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white mt-2 mb-1">{children}</h5>,
+            blockquote: ({ children }) => (
+              <blockquote className="border-l-2 border-cyan-500 pl-3 italic my-2 text-slate-600 dark:text-slate-300 bg-cyan-500/5 py-1 rounded-r-lg">
+                {children}
+              </blockquote>
+            ),
+            code: ({ inline, children, ...props }: any) => {
+              if (inline) {
+                return (
+                  <code className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-[#070d1a] border border-slate-300 dark:border-cyan-500/30 font-mono text-[11px] text-pink-600 dark:text-pink-300 font-medium">
+                    {children}
+                  </code>
+                );
+              }
+              return (
+                <pre className="p-2.5 my-2 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs overflow-x-auto border border-slate-800">
+                  <code>{children}</code>
+                </pre>
+              );
+            },
+            table: ({ children }) => (
+              <div className="overflow-x-auto my-2">
+                <table className="min-w-full text-left text-xs border border-slate-200 dark:border-cyan-500/30 rounded-lg overflow-hidden">
+                  {children}
+                </table>
               </div>
-            );
-          }
-
-          // Numbered item
-          const matchNum = line.match(/^(\d+)\.\s+(.*)/);
-          if (matchNum) {
-            return (
-              <div key={idx} className="flex items-start gap-2 pl-2">
-                <span className="font-bold text-blue-600 dark:text-cyan-400">{matchNum[1]}.</span>
-                <span>{parseBold(matchNum[2])}</span>
-              </div>
-            );
-          }
-
-          // Heading
-          if (line.startsWith('### ')) {
-            return (
-              <h4 key={idx} className="font-bold text-sm text-slate-900 dark:text-white pt-1">
-                {parseBold(line.substring(4))}
-              </h4>
-            );
-          }
-
-          return <p key={idx}>{parseBold(line)}</p>;
-        })}
+            ),
+            th: ({ children }) => (
+              <th className="bg-slate-100 dark:bg-[#0d172a] px-2.5 py-1.5 font-bold border-b border-slate-200 dark:border-cyan-500/30">
+                {children}
+              </th>
+            ),
+            td: ({ children }) => (
+              <td className="px-2.5 py-1 border-b border-slate-100 dark:border-slate-800">
+                {children}
+              </td>
+            ),
+          }}
+        >
+          {content}
+        </Markdown>
       </div>
     );
-  };
-
-  const parseBold = (text: string) => {
-    const parts = text.split(/(\*\*[^*]+\*\*)/g);
-    return parts.map((part, i) => {
-      if (part.startsWith('**') && part.endsWith('**')) {
-        return <strong key={i} className="font-semibold text-slate-900 dark:text-white">{part.slice(2, -2)}</strong>;
-      }
-      return part;
-    });
   };
 
   const messages = entorno.chatMessages || [];
@@ -574,28 +583,8 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
       {/* VIEW 1: CHAT CON LAS FUENTES */}
       {subView === 'chat' && (
         <div className="space-y-4 animate-fadeIn">
-          {/* Active Sources Quick Pill in Chat Header */}
-          <div className="flex items-center justify-between px-2 text-xs text-slate-500 dark:text-slate-400">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              <span>
-                {entorno.fuentes.length === 0
-                  ? 'Sin fuentes adjuntas (el chat responderá con conocimiento general)'
-                  : `${entorno.fuentes.length} ${entorno.fuentes.length === 1 ? 'fuente activa' : 'fuentes activas'} para este chat`}
-              </span>
-            </div>
-
-            <button
-              onClick={() => setSubView('fuentes')}
-              className="text-[11px] font-bold text-blue-600 dark:text-cyan-400 hover:underline flex items-center gap-1"
-            >
-              <span>Gestionar fuentes</span>
-              <ArrowRight className="w-3 h-3" />
-            </button>
-          </div>
-
           {/* Chat Messages Scrollable Box */}
-          <div className="min-h-[380px] max-h-[560px] overflow-y-auto space-y-3.5 p-3 sm:p-4 rounded-3xl bg-white dark:bg-[#0c1424] border border-slate-200 dark:border-cyan-500/20 shadow-inner custom-scrollbar">
+          <div className="min-h-[380px] max-h-[560px] overflow-y-auto space-y-3.5 p-3 sm:p-4 rounded-3xl bg-white dark:bg-[#0c1424] border border-slate-200 dark:border-cyan-500/20 shadow-inner no-scrollbar">
             {/* If no messages: Welcome & Suggestion Chips */}
             {messages.length === 0 && (
               <div className="text-center py-8 space-y-4 animate-fadeIn">
@@ -822,8 +811,24 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
             </div>
 
             <div className="flex items-center justify-between px-2 pt-2 text-[11px] text-slate-400 dark:text-slate-500">
-              <span>Chat conectado a las fuentes de este entorno</span>
-              <span>Presiona Enter ↵</span>
+              <div className="flex items-center gap-1.5">
+                <span className={`w-1.5 h-1.5 rounded-full ${entorno.fuentes.length > 0 ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
+                <span>
+                  {entorno.fuentes.length === 0
+                    ? 'Sin fuentes (conocimiento general)'
+                    : `${entorno.fuentes.length} ${entorno.fuentes.length === 1 ? 'fuente conectada' : 'fuentes conectadas'}`}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setSubView('fuentes')}
+                  className="text-blue-600 dark:text-cyan-400 hover:underline font-semibold ml-1 inline-flex items-center gap-0.5"
+                  title="Administrar las fuentes de este entorno"
+                >
+                  <span>• Gestionar fuentes</span>
+                  <ArrowRight className="w-2.5 h-2.5" />
+                </button>
+              </div>
+              <span className="hidden sm:inline">Enter ↵ para enviar</span>
             </div>
           </div>
         </div>

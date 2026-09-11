@@ -1,5 +1,6 @@
 import React from 'react';
 import { AprendeLogo } from './AprendeLogo.tsx';
+import { PWAInstallButton } from './PWAInstallButton.tsx';
 import { ActiveTab } from '../types.ts';
 import {
   Menu,
@@ -46,8 +47,8 @@ export const Navigation: React.FC<NavigationProps> = ({
 }) => {
   return (
     <>
-      {/* Top App Header */}
-      <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-cyan-500/15 bg-white/90 dark:bg-[#070d1a]/90 backdrop-blur-md px-3 sm:px-4 py-2.5 transition-colors">
+      {/* Top App Header with native mobile status bar padding */}
+      <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-cyan-500/15 bg-white/95 dark:bg-[#070d1a] backdrop-blur-md px-3 sm:px-4 py-2 sm:py-2.5 pt-[max(0.5rem,env(safe-area-inset-top))] transition-colors">
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-2">
           {/* Left: Drawer trigger button & Brand */}
           <div className="flex items-center gap-2 sm:gap-3">
@@ -77,8 +78,9 @@ export const Navigation: React.FC<NavigationProps> = ({
             </button>
           </div>
 
-          {/* Right Controls: Contextual information & Dark Mode toggle ONLY (profile avatar removed) */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          {/* Right Controls: PWA Install, Contextual info & Theme toggle */}
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            <PWAInstallButton />
             {activeTab === 'quiz' && (
               <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-cyan-950/70 border border-slate-300 dark:border-cyan-500/30 text-slate-800 dark:text-cyan-300 text-xs font-mono font-medium shadow-sm">
                 <Clock className="w-3.5 h-3.5 text-blue-600 dark:text-cyan-400 animate-pulse" />

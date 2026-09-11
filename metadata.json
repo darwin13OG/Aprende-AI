@@ -1,6 +1,6 @@
 {
   "name": "Aprende AI",
-  "description": "Generador de micro-aprendizajes gamificados con IA multimodal: cuestionarios interactivos, flashcards 3D con algoritmo SRS y mapa mental interactivo.",
+  "description": "Plataforma PWA de micro-aprendizaje activo y tutor con IA multimodal: chat conectado a fuentes, cuestionarios interactivos, flashcards 3D y mapa mental conceptual.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
