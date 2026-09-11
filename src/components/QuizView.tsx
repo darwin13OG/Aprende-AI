@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { MathMarkdown } from './MathMarkdown.tsx';
 import { QuizQuestion, ActiveTab } from '../types.ts';
 import {
   Check,
@@ -167,9 +168,9 @@ export const QuizView: React.FC<QuizViewProps> = ({
           <div className="w-7 h-7 rounded-xl bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-500/40 text-blue-600 dark:text-cyan-400 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">
             {currentIndex + 1}
           </div>
-          <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-snug text-left">
-            {currentQ.pregunta}
-          </h2>
+          <div className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-snug text-left flex-1">
+            <MathMarkdown content={currentQ.pregunta} />
+          </div>
         </div>
 
         {/* Options List */}
@@ -215,9 +216,9 @@ export const QuizView: React.FC<QuizViewProps> = ({
                     letter
                   )}
                 </span>
-                <span className="text-xs sm:text-sm font-medium leading-relaxed flex-1">
-                  {opcion}
-                </span>
+                <div className="text-xs sm:text-sm font-medium leading-relaxed flex-1">
+                  <MathMarkdown content={opcion} />
+                </div>
               </button>
             );
           })}
@@ -229,9 +230,9 @@ export const QuizView: React.FC<QuizViewProps> = ({
             <span className="text-[11px] font-bold text-blue-600 dark:text-cyan-400 uppercase tracking-wider block">
               Explicación Didáctica
             </span>
-            <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
-              {currentQ.explicacion}
-            </p>
+            <div className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+              <MathMarkdown content={currentQ.explicacion} />
+            </div>
           </div>
         )}
 

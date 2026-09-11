@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { MathMarkdown } from './MathMarkdown.tsx';
 import { Flashcard } from '../types.ts';
 import {
   ArrowLeft,
@@ -301,9 +302,9 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           {/* Card Middle: Question & Answer */}
           <div className="my-auto py-4 space-y-5 text-left">
             {/* Question Text in Large Display Font */}
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-white leading-snug">
-              {currentCard.concepto}
-            </h2>
+            <div className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-slate-900 dark:text-white leading-snug">
+              <MathMarkdown content={currentCard.concepto} />
+            </div>
 
             {/* Answer Reveal Area */}
             {showAnswer ? (
@@ -311,13 +312,13 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 <span className="text-[11px] font-bold text-blue-600 dark:text-cyan-400 uppercase tracking-wider block">
                   Respuesta Didáctica
                 </span>
-                <p className="text-sm sm:text-base font-medium text-slate-700 dark:text-slate-200 leading-relaxed">
-                  {currentCard.definicion}
-                </p>
+                <div className="text-sm sm:text-base font-medium text-slate-700 dark:text-slate-200 leading-relaxed">
+                  <MathMarkdown content={currentCard.definicion} />
+                </div>
                 {currentCard.ejemplo && (
-                  <p className="text-xs text-slate-500 dark:text-slate-400 italic pt-1">
-                    Ejemplo: {currentCard.ejemplo}
-                  </p>
+                  <div className="text-xs text-slate-500 dark:text-slate-400 italic pt-1">
+                    <MathMarkdown content={`Ejemplo: ${currentCard.ejemplo}`} />
+                  </div>
                 )}
               </div>
             ) : null}

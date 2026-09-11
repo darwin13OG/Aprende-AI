@@ -1,8 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import Markdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
+import { MathMarkdown } from './MathMarkdown.tsx';
 import { Entorno, Fuente, ActiveTab, ChatMessage } from '../types.ts';
 import {
   Sparkles,
@@ -343,71 +340,6 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
     setTimeout(() => setCopiedMessageId(null), 1500);
   };
 
-  // Render full markdown text: bold, italics, dividers, lists, code, quotes and LaTeX math formulas (KaTeX)
-  const renderMessageMarkdown = (content: string) => {
-    // Unescape any escaped dollar signs so LaTeX math like \$\alpha\$ or \$90^\circ\$ parses correctly as math
-    const sanitized = content.replace(/\\(\$)/g, '$');
-
-    return (
-      <div className="space-y-2 text-xs sm:text-sm leading-relaxed text-slate-800 dark:text-slate-100 overflow-x-auto">
-        <Markdown
-          remarkPlugins={[remarkGfm, remarkMath]}
-          rehypePlugins={[[rehypeKatex, { throwOnError: false, strict: false }]]}
-          components={{
-            p: ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
-            strong: ({ children }) => <strong className="font-bold text-slate-950 dark:text-white">{children}</strong>,
-            em: ({ children }) => <em className="italic text-cyan-700 dark:text-cyan-300 font-medium not-italic-brackets">{children}</em>,
-            ul: ({ children }) => <ul className="space-y-1 my-2 pl-4 list-disc marker:text-cyan-500">{children}</ul>,
-            ol: ({ children }) => <ol className="space-y-1 my-2 pl-4 list-decimal marker:text-blue-500 dark:marker:text-cyan-400 font-bold">{children}</ol>,
-            li: ({ children }) => <li className="pl-1 leading-relaxed font-normal">{children}</li>,
-            hr: () => <hr className="my-3 border-t border-slate-200 dark:border-cyan-500/20" />,
-            h1: ({ children }) => <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white mt-3 mb-1">{children}</h3>,
-            h2: ({ children }) => <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white mt-2.5 mb-1">{children}</h4>,
-            h3: ({ children }) => <h5 className="text-xs sm:text-sm font-bold text-slate-900 dark:text-white mt-2 mb-1">{children}</h5>,
-            blockquote: ({ children }) => (
-              <blockquote className="border-l-2 border-cyan-500 pl-3 italic my-2 text-slate-600 dark:text-slate-300 bg-cyan-500/5 py-1 rounded-r-lg">
-                {children}
-              </blockquote>
-            ),
-            code: ({ inline, children, ...props }: any) => {
-              if (inline) {
-                return (
-                  <code className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-[#070d1a] border border-slate-300 dark:border-cyan-500/30 font-mono text-[11px] text-pink-600 dark:text-pink-300 font-medium">
-                    {children}
-                  </code>
-                );
-              }
-              return (
-                <pre className="p-2.5 my-2 rounded-xl bg-slate-900 text-slate-100 font-mono text-xs overflow-x-auto border border-slate-800">
-                  <code>{children}</code>
-                </pre>
-              );
-            },
-            table: ({ children }) => (
-              <div className="overflow-x-auto my-2">
-                <table className="min-w-full text-left text-xs border border-slate-200 dark:border-cyan-500/30 rounded-lg overflow-hidden">
-                  {children}
-                </table>
-              </div>
-            ),
-            th: ({ children }) => (
-              <th className="bg-slate-100 dark:bg-[#0d172a] px-2.5 py-1.5 font-bold border-b border-slate-200 dark:border-cyan-500/30">
-                {children}
-              </th>
-            ),
-            td: ({ children }) => (
-              <td className="px-2.5 py-1 border-b border-slate-100 dark:border-slate-800">
-                {children}
-              </td>
-            ),
-          }}
-        >
-          {sanitized}
-        </Markdown>
-      </div>
-    );
-  };
-
   const messages = entorno.chatMessages || [];
 
   return (
@@ -648,7 +580,7 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
                     {isUser ? (
                       <p className="text-xs sm:text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
                     ) : (
-                      renderMessageMarkdown(msg.content)
+                      <MathMarkdown content={msg.content} />
                     )}
 
                     {/* Sources cited footer */}

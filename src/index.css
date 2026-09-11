@@ -76,3 +76,66 @@ body,
   box-shadow: 0 0 25px -4px rgba(16, 185, 129, 0.3);
 }
 
+/* =========================================================================
+   KaTeX & Mathematical Formula Rendering & Spacing
+   Fixes Tailwind resets, fraction overlap, and provides generous breathing room
+   ========================================================================= */
+
+.katex {
+  font-size: 1.06em !important;
+  text-rendering: auto;
+  line-height: normal;
+  white-space: normal;
+}
+
+/* Ensure fraction bars are clearly visible and never clipped or lightened by resets */
+.katex .mfrac .frac-line {
+  border-bottom-style: solid !important;
+  border-bottom-width: 1.5px !important;
+  border-color: currentColor !important;
+  display: inline-block !important;
+}
+
+/* Clean vertical table layout in KaTeX */
+.katex .vlist-t {
+  border-collapse: collapse;
+}
+
+.katex .vlist-r {
+  line-height: normal;
+}
+
+/* Inline math clearance: prevent vertical collision with lines above and below */
+span.katex,
+.katex-inline {
+  display: inline-block;
+  padding: 0.2rem 0.25rem;
+  vertical-align: middle;
+}
+
+/* Display block formulas ($$...$$): generous margins, rounded card frame, and overflow handling */
+.katex-display {
+  display: block !important;
+  margin: 1.5rem 0 !important;
+  padding: 0.85rem 1.25rem !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  text-align: center;
+  background-color: rgba(241, 245, 249, 0.85);
+  border-radius: 0.875rem;
+  border: 1px solid rgba(203, 213, 225, 0.8);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+}
+
+.dark .katex-display {
+  background-color: rgba(10, 18, 36, 0.75);
+  border-color: rgba(6, 182, 212, 0.25);
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Math container extra spacing */
+.math-content {
+  line-height: 1.75;
+}
+
+
