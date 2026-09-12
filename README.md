@@ -18,10 +18,11 @@ Aprende AI es una aplicación web progresiva (PWA) de alto rendimiento inspirada
 - **Enlaces Web y YouTube**: Procesamiento de artículos y recursos en línea.
 - **Notas de Texto**: Apuntes rápidos enriquecidos.
 
-### 💬 Chat Interactivo con Fuentes
+### 💬 Chat Interactivo con Fuentes y Soporte Matemático
 - Tutor virtual que responde basándose **exclusivamente en tus fuentes cargadas**.
 - Cita de fuentes en cada respuesta para verificar la procedencia de la información.
-- **Reconocimiento y Renderizado Enriquecido de Markdown**: Bolds (`**texto**`), cursivas y subtítulos (`*texto*`), listas numeradas y viñetas, bloques de código, citas y divisores (`---`).
+- **Renderizado Matemático LaTeX (KaTeX)**: Visualización impecable de identidades trigonométricas, fracciones (`\dfrac`), matrices, derivadas, integrales y símbolos griegos con generoso espaciado vertical y diseño adaptativo.
+- **Reconocimiento y Renderizado Enriquecido de Markdown**: Bolds (`**texto**`), cursivas y subtítulos (`*texto*`), listas numeradas y viñetas con sangría, bloques de código, citas y divisores (`---`).
 - **Dictado por Voz**: Integración nativa con Web Speech API para formular preguntas hablando.
 - Interfaz pulida y limpia sin barras de desplazamiento intrusivas (`no-scrollbar`).
 

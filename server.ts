@@ -185,9 +185,10 @@ app.post('/api/experiences', (req, res) => {
 
 // Multimodal Generation Endpoint with Model Fallback Cascade
 const CASCADE_MODELS = [
+  'gemini-2.5-flash',
+  'gemini-2.5-flash-lite',
   'gemini-3.8-flash',
   'gemini-3.1-flash-lite',
-  'gemini-flash-latest',
 ];
 
 app.post('/api/generate', async (req, res) => {
@@ -547,6 +548,13 @@ NORMAS DE INTERACCIÓN:
 3. Si el usuario te hace preguntas conceptuales que van más allá del texto de las fuentes, puedes responder usando tu base de conocimiento pedagógico, pero aclarando amablemente que ese dato complementa las fuentes cargadas.
 4. Si el usuario te pide crear o generar un cuestionario, flashcards o mapa mental, explícale que puede presionar el botón "⚡ Generar Material de Estudio" situado arriba en la sección de Fuentes o dentro del entorno, y ofrécele un adelanto con 2 o 3 conceptos destacados.
 5. Utiliza formato Markdown limpio (listas con viñetas, negritas para términos clave, código si aplica).
+6. REGLAS CRUCIALES DE FÓRMULAS MATEMÁTICAS Y ESPACIADO:
+   - Cuando expliques matemáticas, identidades trigonométricas, física o fórmulas:
+     * Deja SIEMPRE un renglón en blanco antes y después de cada fórmula.
+     * Para fórmulas importantes, usa modo display en bloque centrado con doble dólar:
+       $$ \frac{\text{Cateto Opuesto}}{\text{Hipotenusa}} = \frac{CO}{H} $$
+     * En listas numeradas de identidades o ecuaciones, deja un renglón en blanco entre cada número para que las fracciones respiren con generoso espacio y nunca choquen.
+     * En palabras dentro de fracciones, utiliza siempre \\text{...} (ej. \\frac{\\text{Cateto Adyacente}}{\\text{Hipotenusa}}).
 `;
 
     // History formatting
