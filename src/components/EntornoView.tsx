@@ -361,8 +361,8 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
         onChange={handleFileSelected}
       />
 
-      {/* Top Entorno Header & Navigation Bar (Non-editable here, sleek and responsive) */}
-      <div className="flex items-center justify-between gap-2.5 px-2 py-2 sm:px-4 sm:py-2.5 rounded-2xl bg-white/70 dark:bg-[#0c1424]/70 backdrop-blur-md border border-slate-200/80 dark:border-cyan-500/20 shadow-sm">
+      {/* Desktop Entorno Header (Preserved for PC where it looks great) */}
+      <div className="hidden sm:flex items-center justify-between gap-2.5 px-4 py-2.5 rounded-2xl bg-white/70 dark:bg-[#0c1424]/70 backdrop-blur-md border border-slate-200/80 dark:border-cyan-500/20 shadow-sm">
         {/* Entorno Title (Read-only; editing is done only in drawer) */}
         <div className="flex items-center gap-2 min-w-0">
           <span className="w-2 h-2 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.8)] flex-shrink-0" />
@@ -372,11 +372,11 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
         </div>
 
         {/* Sleek Segmented Switcher for Chat vs Fuentes */}
-        <div className="flex items-center bg-slate-100 dark:bg-[#070d1a] p-0.5 sm:p-1 rounded-xl sm:rounded-2xl border border-slate-200 dark:border-cyan-500/25 flex-shrink-0">
+        <div className="flex items-center bg-slate-100 dark:bg-[#070d1a] p-1 rounded-2xl border border-slate-200 dark:border-cyan-500/25 flex-shrink-0">
           <button
             type="button"
             onClick={() => setSubView('chat')}
-            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-xs font-bold transition-all active:scale-95 ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 ${
               subView === 'chat'
                 ? 'bg-white dark:bg-[#111c33] text-blue-600 dark:text-cyan-400 shadow-sm'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -393,7 +393,7 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
           <button
             type="button"
             onClick={() => setSubView('fuentes')}
-            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl text-xs font-bold transition-all active:scale-95 ${
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 ${
               subView === 'fuentes'
                 ? 'bg-white dark:bg-[#111c33] text-blue-600 dark:text-cyan-400 shadow-sm'
                 : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -407,6 +407,41 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
             </span>
           </button>
         </div>
+      </div>
+
+      {/* Mobile Native Ergonomic Segment Control (Compact, avoids generic duplicate box) */}
+      <div className="flex sm:hidden items-center justify-between p-1 rounded-2xl bg-slate-200/70 dark:bg-[#0c1424] border border-slate-300/50 dark:border-cyan-500/20 shadow-sm">
+        <button
+          type="button"
+          onClick={() => setSubView('chat')}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 ${
+            subView === 'chat'
+              ? 'bg-white dark:bg-cyan-500/20 text-blue-600 dark:text-cyan-300 shadow-sm border border-slate-200/80 dark:border-cyan-500/30'
+              : 'text-slate-600 dark:text-slate-400'
+          }`}
+        >
+          <MessageSquare className="w-4 h-4" />
+          <span>Chat</span>
+          {messages.length > 0 && (
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 dark:bg-cyan-400 inline-block" />
+          )}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setSubView('fuentes')}
+          className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 ${
+            subView === 'fuentes'
+              ? 'bg-white dark:bg-cyan-500/20 text-blue-600 dark:text-cyan-300 shadow-sm border border-slate-200/80 dark:border-cyan-500/30'
+              : 'text-slate-600 dark:text-slate-400'
+          }`}
+        >
+          <FolderOpen className="w-4 h-4" />
+          <span>Fuentes</span>
+          <span className="px-1.5 py-0.2 rounded-full bg-slate-100 dark:bg-[#070d1a] text-[10px] font-extrabold text-blue-600 dark:text-cyan-300">
+            {entorno.fuentes.length}
+          </span>
+        </button>
       </div>
 
       {/* Model Quota Exhausted Alert / API Key Input Card */}
@@ -489,9 +524,9 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
 
       {/* VIEW 1: CHAT CON LAS FUENTES */}
       {subView === 'chat' && (
-        <div className="space-y-4 animate-fadeIn">
+        <div className="space-y-3 sm:space-y-4 animate-fadeIn">
           {/* Chat Messages Scrollable Box */}
-          <div className="min-h-[380px] max-h-[560px] overflow-y-auto space-y-3.5 p-3 sm:p-4 rounded-3xl bg-white dark:bg-[#0c1424] border border-slate-200 dark:border-cyan-500/20 shadow-inner no-scrollbar">
+          <div className="min-h-[320px] sm:min-h-[380px] max-h-[calc(100dvh-300px)] sm:max-h-[560px] overflow-y-auto space-y-3.5 p-3 sm:p-4 rounded-2xl sm:rounded-3xl bg-white dark:bg-[#0c1424] border border-slate-200 dark:border-cyan-500/20 shadow-sm no-scrollbar">
             {/* If no messages: Welcome & Suggestion Chips */}
             {messages.length === 0 && (
               <div className="text-center py-8 space-y-4 animate-fadeIn">
@@ -628,7 +663,7 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
 
           {/* Quick CTA to generate Quiz/Cards/Map right from chat */}
           {entorno.fuentes.length > 0 && (
-            <div className="p-3 rounded-2xl bg-gradient-to-r from-blue-50 via-cyan-50 to-indigo-50 dark:from-[#0d172a] dark:via-[#09152b] dark:to-[#0d172a] border border-blue-200 dark:border-cyan-500/30 flex items-center justify-between gap-3 shadow-sm">
+            <div className="p-3 rounded-2xl bg-gradient-to-r from-blue-50 via-cyan-50 to-indigo-50 dark:from-[#0d172a] dark:via-[#09152b] dark:to-[#0d172a] border border-blue-200 dark:border-cyan-500/30 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 shadow-sm">
               <div className="flex items-center gap-2 truncate">
                 <Sparkles className="w-4 h-4 text-blue-600 dark:text-cyan-400 flex-shrink-0" />
                 <span className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
@@ -639,7 +674,7 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
                 type="button"
                 onClick={handleTriggerGenerate}
                 disabled={isGenerating}
-                className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-bold transition active:scale-95 shadow-sm flex items-center gap-1.5 flex-shrink-0"
+                className="w-full sm:w-auto px-3.5 py-2 sm:py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-bold transition active:scale-95 shadow-sm flex items-center justify-center gap-1.5 flex-shrink-0"
               >
                 {isGenerating ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -652,14 +687,14 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
             </div>
           )}
 
-          {/* Chat Floating Input Bar */}
-          <div className="relative pt-1">
-            <div className="relative rounded-2xl sm:rounded-3xl bg-white dark:bg-[#0c1424] border border-slate-200 dark:border-cyan-500/25 shadow-lg dark:shadow-[0_10px_35px_rgba(0,0,0,0.5)] p-1.5 sm:p-2 flex items-center gap-1 sm:gap-2">
+          {/* Chat Sticky Bottom Input Bar (Always accessible to thumb above navigation bar) */}
+          <div className="sticky bottom-[60px] sm:bottom-[68px] z-30 pt-1 pb-1">
+            <div className="relative rounded-2xl sm:rounded-3xl bg-white/95 dark:bg-[#0c1424]/95 backdrop-blur-md border border-slate-200 dark:border-cyan-500/25 shadow-lg dark:shadow-[0_10px_35px_rgba(0,0,0,0.5)] p-1.5 sm:p-2 flex items-center gap-1 sm:gap-2">
               {/* Paperclip Button -> quick attach to sources */}
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="p-2.5 rounded-xl text-slate-400 hover:text-blue-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition flex-shrink-0"
+                className="p-2 sm:p-2.5 rounded-xl text-slate-400 hover:text-blue-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition flex-shrink-0 active:scale-95"
                 title="Adjuntar PDF o imagen a las fuentes"
                 aria-label="Adjuntar archivo a las fuentes"
               >
@@ -679,17 +714,17 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
                 }}
                 placeholder={
                   entorno.fuentes.length > 0
-                    ? 'Pregunta algo sobre tus fuentes o pide explicaciones...'
-                    : 'Escribe tu pregunta o sube fuentes para responder con ellas...'
+                    ? 'Pregunta algo sobre tus fuentes o conceptos...'
+                    : 'Escribe tu duda o sube fuentes para responder...'
                 }
-                className="flex-1 bg-transparent border-none text-xs sm:text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none px-1"
+                className="flex-1 bg-transparent border-none text-xs sm:text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none px-1 py-1"
               />
 
               {/* Voice Dictation Mic Button */}
               <button
                 type="button"
                 onClick={handleToggleVoice}
-                className={`p-2.5 rounded-xl transition flex-shrink-0 ${
+                className={`p-2 sm:p-2.5 rounded-xl transition flex-shrink-0 active:scale-95 ${
                   isListening
                     ? 'bg-red-500 text-white animate-pulse'
                     : 'text-slate-400 hover:text-blue-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800/60'
@@ -717,21 +752,21 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
               </button>
             </div>
 
-            <div className="flex items-center justify-between px-2 pt-2 text-[11px] text-slate-400 dark:text-slate-500">
-              <div className="flex items-center gap-1.5">
+            <div className="flex items-center justify-between px-2 pt-1.5 text-[10px] sm:text-[11px] text-slate-400 dark:text-slate-500">
+              <div className="flex items-center gap-1.5 flex-wrap">
                 <span className={`w-1.5 h-1.5 rounded-full ${entorno.fuentes.length > 0 ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'}`} />
                 <span>
                   {entorno.fuentes.length === 0
-                    ? 'Sin fuentes (conocimiento general)'
-                    : `${entorno.fuentes.length} ${entorno.fuentes.length === 1 ? 'fuente conectada' : 'fuentes conectadas'}`}
+                    ? 'Sin fuentes'
+                    : `${entorno.fuentes.length} ${entorno.fuentes.length === 1 ? 'fuente' : 'fuentes'}`}
                 </span>
                 <button
                   type="button"
                   onClick={() => setSubView('fuentes')}
-                  className="text-blue-600 dark:text-cyan-400 hover:underline font-semibold ml-1 inline-flex items-center gap-0.5"
+                  className="text-blue-600 dark:text-cyan-400 hover:underline font-semibold ml-0.5 inline-flex items-center gap-0.5"
                   title="Administrar las fuentes de este entorno"
                 >
-                  <span>• Gestionar fuentes</span>
+                  <span>• Fuentes</span>
                   <ArrowRight className="w-2.5 h-2.5" />
                 </button>
               </div>

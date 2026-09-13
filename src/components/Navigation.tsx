@@ -13,6 +13,9 @@ import {
   Layers,
   Network,
   Share2,
+  Save,
+  PanelLeftClose,
+  PanelLeft,
 } from 'lucide-react';
 
 interface NavigationProps {
@@ -21,6 +24,7 @@ interface NavigationProps {
   isDarkMode: boolean;
   setIsDarkMode: (val: boolean | ((prev: boolean) => boolean)) => void;
   currentEntornoName?: string;
+  isDrawerOpen?: boolean;
   onOpenEntornosDrawer?: () => void;
   quizTimeFormatted?: string;
   flashcardIndex?: number;
@@ -37,6 +41,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   isDarkMode,
   setIsDarkMode,
   currentEntornoName = 'Nuevo Entorno',
+  isDrawerOpen = false,
   onOpenEntornosDrawer,
   quizTimeFormatted = '0:45',
   flashcardIndex = 1,
@@ -50,26 +55,42 @@ export const Navigation: React.FC<NavigationProps> = ({
       {/* Top App Header with native mobile status bar padding */}
       <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-cyan-500/15 bg-white/95 dark:bg-[#070d1a] backdrop-blur-md px-3 sm:px-4 py-2 sm:py-2.5 pt-[max(0.5rem,env(safe-area-inset-top))] transition-colors">
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-2">
-          {/* Left: Drawer trigger button & Brand */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {onOpenEntornosDrawer && (
-              <button
-                onClick={onOpenEntornosDrawer}
-                className="p-2 rounded-xl text-slate-700 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-slate-100 dark:hover:bg-slate-800/70 border border-slate-200 dark:border-cyan-500/20 transition active:scale-95"
-                title="Abrir menú de entornos"
-                aria-label="Abrir menú de entornos"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
-            )}
-
-            {/* Logo + Subtitle matching screen.png */}
+          {/* Left: Brand Logo that functions as the Drawer Toggle */}
+          <div className="flex items-center gap-1 sm:gap-2">
             <button
-              onClick={() => setActiveTab('entorno')}
-              className="flex items-center gap-2 text-left focus:outline-none rounded-lg"
-              aria-label="Ir al inicio"
+              onClick={onOpenEntornosDrawer}
+              className={`flex items-center gap-2 p-1.5 sm:px-2.5 sm:py-1.5 rounded-2xl border transition-all active:scale-95 ${
+                isDrawerOpen
+                  ? 'bg-blue-50 dark:bg-cyan-950/80 border-blue-400 dark:border-cyan-400/60 shadow-md shadow-cyan-500/20'
+                  : 'hover:bg-slate-100 dark:hover:bg-slate-800/60 border-transparent hover:border-slate-200 dark:hover:border-cyan-500/20'
+              }`}
+              title={
+                isDrawerOpen
+                  ? 'Guardar y ocultar barra del menú'
+                  : 'Abrir barra de entornos y menú'
+              }
+              aria-label={
+                isDrawerOpen
+                  ? 'Guardar y ocultar barra del menú'
+                  : 'Abrir barra de entornos y menú'
+              }
             >
               <AprendeLogo size="md" />
+
+              {/* Status / Toggle Sign: when open, shows "Signo de Guardar Barra" */}
+              <div className="flex items-center gap-1">
+                {isDrawerOpen ? (
+                  <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-blue-600 text-white dark:bg-cyan-400 dark:text-[#070d1a] text-[11px] font-extrabold shadow-sm animate-fadeIn">
+                    <Save className="w-3.5 h-3.5 stroke-[2.5]" />
+                    <span className="text-[10px] sm:text-xs">Guardar Barra</span>
+                  </div>
+                ) : (
+                  <div className="p-1 rounded-lg text-slate-500 dark:text-slate-400 hover:text-cyan-500">
+                    <PanelLeft className="w-4 h-4" />
+                  </div>
+                )}
+              </div>
+
               <div className="hidden sm:block pl-1 text-left border-l border-slate-300 dark:border-cyan-500/30">
                 <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest block leading-none">
                   {currentEntornoName ? currentEntornoName.slice(0, 18) : 'CHAT NUEVO'}

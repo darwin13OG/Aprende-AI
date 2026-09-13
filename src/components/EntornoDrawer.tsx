@@ -12,6 +12,7 @@ import {
   ShieldCheck,
   ChevronRight,
   ExternalLink,
+  Save,
 } from 'lucide-react';
 
 interface EntornoDrawerProps {
@@ -45,8 +46,6 @@ export const EntornoDrawer: React.FC<EntornoDrawerProps> = ({
   const [showKeyInput, setShowKeyInput] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
-  if (!isOpen) return null;
-
   const handleStartEdit = (entorno: Entorno, e: React.MouseEvent) => {
     e.stopPropagation();
     setEditingId(entorno.id);
@@ -79,15 +78,26 @@ export const EntornoDrawer: React.FC<EntornoDrawerProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex animate-fadeIn">
-      {/* Backdrop */}
+    <div
+      className={`fixed inset-0 z-50 flex transition-all duration-300 ${
+        isOpen ? 'pointer-events-auto' : 'pointer-events-none'
+      }`}
+      aria-hidden={!isOpen}
+    >
+      {/* Backdrop with smooth opacity fade */}
       <div
-        className="fixed inset-0 bg-black/60 dark:bg-black/75 backdrop-blur-sm transition-opacity"
+        className={`fixed inset-0 bg-black/60 dark:bg-black/75 backdrop-blur-sm transition-opacity duration-300 ease-in-out ${
+          isOpen ? 'opacity-100' : 'opacity-0'
+        }`}
         onClick={onClose}
       />
 
-      {/* Slide-out Drawer */}
-      <div className="relative z-10 w-full max-w-xs sm:max-w-sm h-full bg-white dark:bg-[#070d1a] border-r border-slate-200 dark:border-cyan-500/20 p-4 flex flex-col shadow-2xl transition-colors">
+      {/* Slide-out Drawer with smooth transform */}
+      <div
+        className={`relative z-10 w-full max-w-xs sm:max-w-sm h-full bg-white dark:bg-[#070d1a] border-r border-slate-200 dark:border-cyan-500/20 p-4 flex flex-col shadow-2xl transition-transform duration-300 ease-in-out transform ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-cyan-500/20">
           <div className="flex items-center gap-2.5">
@@ -99,13 +109,16 @@ export const EntornoDrawer: React.FC<EntornoDrawerProps> = ({
               <p className="text-[11px] text-slate-500 dark:text-slate-400">Espacios de estudio independientes</p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 transition"
-            aria-label="Cerrar panel"
-          >
-            <X className="w-4 h-4" />
-          </button>
+          <div className="flex items-center">
+            <button
+              onClick={onClose}
+              className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/70 border border-transparent hover:border-slate-200 dark:hover:border-slate-700/60 transition active:scale-95"
+              aria-label="Cerrar panel"
+              title="Cerrar"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Action: + Nuevo Entorno */}

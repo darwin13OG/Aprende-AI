@@ -23,6 +23,7 @@ export interface MindmapSubnode {
   id?: string;
   titulo: string;
   categoria?: string;
+  descripcion?: string;
   detalles: string[];
   videoMin?: string;
   quizzesCount?: number;

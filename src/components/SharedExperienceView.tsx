@@ -12,6 +12,10 @@ import {
   Moon,
   ArrowRight,
   BookOpen,
+  Youtube,
+  Instagram,
+  Globe,
+  ExternalLink,
 } from 'lucide-react';
 
 interface SharedExperienceViewProps {
@@ -147,6 +151,57 @@ export const SharedExperienceView: React.FC<SharedExperienceViewProps> = ({
 
       {/* Main Content Area: Renders strictly the shared module(s) */}
       <main className="w-full max-w-2xl mx-auto px-4 pt-6 pb-20">
+        {/* Creator Attribution Banner showing @user_name and their social network redirect */}
+        {payload.autor && (() => {
+          const socialPlatform = payload.socialRed || 'YouTube';
+          const socialUrl =
+            payload.socialUrl ||
+            `https://www.youtube.com/@${payload.autor.replace('@', '')}`;
+
+          return (
+            <div className="mb-6 p-3.5 rounded-2xl bg-gradient-to-r from-blue-500/10 via-cyan-500/10 to-blue-500/10 border border-blue-200 dark:border-cyan-500/30 flex items-center justify-between gap-3 text-left">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-blue-600 dark:bg-cyan-500 text-white dark:text-[#070d1a] flex items-center justify-center font-black text-xs shadow-sm">
+                  @
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
+                    Material creado y compartido por
+                  </span>
+                  <span className="text-xs sm:text-sm font-extrabold text-blue-600 dark:text-cyan-400 font-mono">
+                    {payload.autor.startsWith('@') ? payload.autor : `@${payload.autor}`}
+                  </span>
+                </div>
+              </div>
+
+              {/* Social Network Link button that redirects to their profile */}
+              <a
+                href={socialUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold text-xs transition active:scale-95 flex-shrink-0 shadow-sm ${
+                  socialPlatform.toLowerCase() === 'youtube'
+                    ? 'bg-red-600 hover:bg-red-500 text-white'
+                    : socialPlatform.toLowerCase() === 'instagram'
+                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-95 text-white'
+                    : 'bg-blue-600 hover:bg-blue-500 text-white'
+                }`}
+                title={`Ir al perfil de ${socialPlatform}: ${socialUrl}`}
+              >
+                {socialPlatform.toLowerCase() === 'youtube' ? (
+                  <Youtube className="w-3.5 h-3.5" />
+                ) : socialPlatform.toLowerCase() === 'instagram' ? (
+                  <Instagram className="w-3.5 h-3.5" />
+                ) : (
+                  <Globe className="w-3.5 h-3.5" />
+                )}
+                <span>{socialPlatform}</span>
+                <ExternalLink className="w-3 h-3 opacity-90 ml-0.5" />
+              </a>
+            </div>
+          );
+        })()}
+
         {activeTab === 'quiz' && payload.quiz && (
           <QuizView
             questions={payload.quiz}
@@ -174,7 +229,7 @@ export const SharedExperienceView: React.FC<SharedExperienceViewProps> = ({
           <MindmapView
             mindmap={payload.mindmap}
             topicTitle={payload.tema}
-            author="@AprendeAI"
+            author={payload.autor || '@creador'}
             onGoToQuiz={() => hasQuiz && setActiveTab('quiz')}
             onShareNode={() => {}}
           />

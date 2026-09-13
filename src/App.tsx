@@ -368,7 +368,8 @@ export default function App() {
         isDarkMode={isDarkMode}
         setIsDarkMode={setIsDarkMode}
         currentEntornoName={currentEntorno.nombre}
-        onOpenEntornosDrawer={() => setIsDrawerOpen(true)}
+        isDrawerOpen={isDrawerOpen}
+        onOpenEntornosDrawer={() => setIsDrawerOpen((prev) => !prev)}
         quizTimeFormatted={formatTimer(quizSeconds)}
         flashcardIndex={flashcardIndex}
         flashcardsTotal={currentEntorno.experience?.flashcards.length || 0}
@@ -424,7 +425,12 @@ export default function App() {
               }
             }
             topicTitle={currentEntorno.experience?.tema || currentEntorno.nombre}
-            author="@AprendeAI"
+            author={
+              currentEntorno.experience?.autor ||
+              localStorage.getItem('aprende_creator_handle') ||
+              '@AprendeAI'
+            }
+            fuentesCount={currentEntorno.fuentes?.length || 1}
             onGoToQuiz={() => handleTabChange('quiz')}
             onShareNode={() => handleOpenShareModal('map')}
           />

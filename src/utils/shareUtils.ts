@@ -7,10 +7,40 @@ export interface SharedPayload {
   id?: string;
   type: ShareType;
   tema: string;
+  autor?: string;
+  socialRed?: string; // e.g. 'YouTube', 'Instagram', 'TikTok', 'X', 'GitHub', 'Web'
+  socialUrl?: string; // e.g. 'https://youtube.com/@dalzatec'
   quiz?: QuizQuestion[];
   flashcards?: Flashcard[];
   mindmap?: MindmapData;
   createdAt?: string;
+}
+
+export function formatSocialUrl(platform: string, handleOrUrl: string): string {
+  if (!handleOrUrl || !handleOrUrl.trim()) return '';
+  const trimmed = handleOrUrl.trim();
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return trimmed;
+  }
+  const clean = trimmed.replace(/^@/, '');
+  switch (platform.toLowerCase()) {
+    case 'youtube':
+      return `https://www.youtube.com/@${clean}`;
+    case 'instagram':
+      return `https://www.instagram.com/${clean}`;
+    case 'tiktok':
+      return `https://www.tiktok.com/@${clean}`;
+    case 'x':
+    case 'twitter':
+      return `https://x.com/${clean}`;
+    case 'github':
+      return `https://github.com/${clean}`;
+    case 'linkedin':
+      return `https://www.linkedin.com/in/${clean}`;
+    case 'web':
+    default:
+      return `https://${trimmed}`;
+  }
 }
 
 /**
@@ -19,13 +49,22 @@ export interface SharedPayload {
  */
 export function buildSanitizedSharePayload(
   experience: LearningExperience,
-  type: ShareType
+  type: ShareType,
+  autor?: string,
+  socialRed?: string,
+  socialUrl?: string
 ): SharedPayload {
   const shortId = `s-${Math.random().toString(36).substring(2, 8)}`;
+  const effectiveAutor = autor || experience.autor || '@creador';
+  const computedUrl = socialRed && socialUrl ? formatSocialUrl(socialRed, socialUrl) : (socialUrl || '');
+
   const base: SharedPayload = {
     id: shortId,
     type,
     tema: experience.tema || 'Tema de Estudio',
+    autor: effectiveAutor.startsWith('@') ? effectiveAutor : `@${effectiveAutor}`,
+    socialRed: socialRed || undefined,
+    socialUrl: computedUrl || undefined,
     createdAt: new Date().toISOString(),
   };
 
@@ -64,11 +103,11 @@ export function buildSanitizedSharePayload(
 
 /**
  * Generates a clean, short, normal URL for sharing.
- * E.g.: https://aprendeai.pages.dev/#share?id=s-a7b2
+ * E.g.: https://aprende-ai.pages.dev/#share?id=s-a7b2
  */
 export function generateShareUrl(
   payload: SharedPayload,
-  domain = 'https://aprendeai.pages.dev'
+  domain = 'https://aprende-ai.pages.dev'
 ): string {
   const shareId = payload.id || `s-${Math.random().toString(36).substring(2, 8)}`;
   
@@ -82,7 +121,7 @@ export function generateShareUrl(
  */
 export function generateCompactPortableUrl(
   payload: SharedPayload,
-  domain = 'https://aprendeai.pages.dev'
+  domain = 'https://aprende-ai.pages.dev'
 ): string {
   try {
     // Minify JSON structure for 70%+ smaller size
@@ -90,6 +129,9 @@ export function generateCompactPortableUrl(
       i: payload.id,
       t: payload.type,
       m: payload.tema,
+      u: payload.autor,
+      sr: payload.socialRed,
+      su: payload.socialUrl,
       q: payload.quiz?.map((q) => [q.pregunta, q.opciones, q.correcta, q.explicacion]),
       f: payload.flashcards?.map((f) => [f.concepto, f.definicion, f.subtitulo || '']),
       mp: payload.mindmap
@@ -144,6 +186,9 @@ export function parseSharedPayloadFromUrl(): SharedPayload | null {
             id: parsed.i,
             type: parsed.t,
             tema: parsed.m,
+            autor: parsed.u || parsed.autor || '@creador',
+            socialRed: parsed.sr || parsed.socialRed,
+            socialUrl: parsed.su || parsed.socialUrl,
             quiz: parsed.q?.map((q: any) => ({
               pregunta: q[0],
               opciones: q[1],

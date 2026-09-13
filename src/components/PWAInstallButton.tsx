@@ -21,12 +21,12 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({ className = 
       <button
         type="button"
         onClick={install}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white text-xs font-bold shadow-md shadow-cyan-500/20 transition-all active:scale-95 ${className}`}
+        className={`flex items-center gap-1.5 p-2 sm:px-3 sm:py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white text-xs font-bold shadow-md shadow-cyan-500/20 transition-all active:scale-95 ${className}`}
         title="Instalar Aprende AI en tu celular o PC"
         aria-label="Instalar app"
       >
-        <Download className="w-3.5 h-3.5 stroke-[2.5]" />
-        <span>Instalar App</span>
+        <Download className="w-4 h-4 sm:w-3.5 sm:h-3.5 stroke-[2.5]" />
+        <span className="hidden sm:inline">Instalar App</span>
       </button>
     );
   }
@@ -38,11 +38,12 @@ export const PWAInstallButton: React.FC<PWAInstallButtonProps> = ({ className = 
         <button
           type="button"
           onClick={() => setShowIOSGuide(true)}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-[#111c33] border border-slate-200 dark:border-cyan-500/30 hover:border-cyan-400 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all active:scale-95 ${className}`}
+          className={`flex items-center gap-1.5 p-2 sm:px-3 sm:py-1.5 rounded-xl bg-slate-100 dark:bg-[#111c33] border border-slate-200 dark:border-cyan-500/30 hover:border-cyan-400 text-slate-700 dark:text-slate-200 text-xs font-bold transition-all active:scale-95 ${className}`}
           title="Instalar en iPhone / iPad"
+          aria-label="Instalar en iOS"
         >
-          <Smartphone className="w-3.5 h-3.5 text-cyan-400" />
-          <span>Instalar en iOS</span>
+          <Smartphone className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-cyan-400" />
+          <span className="hidden sm:inline">Instalar</span>
         </button>
 
         {showIOSGuide && (

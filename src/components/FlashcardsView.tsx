@@ -10,6 +10,8 @@ import {
   CheckCircle2,
   XCircle,
   RotateCcw,
+  X,
+  Check,
 } from 'lucide-react';
 
 interface FlashcardsViewProps {
@@ -165,7 +167,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           <div className="grid grid-cols-2 gap-3 py-2">
             <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-500/30">
               <div className="flex items-center justify-center gap-1.5 text-emerald-700 dark:text-emerald-400 mb-1">
-                <CheckCircle2 className="w-4 h-4" />
+                <Check className="w-4 h-4 stroke-[3]" />
                 <span className="text-xs font-bold uppercase">Entendido</span>
               </div>
               <span className="text-2xl font-black text-emerald-700 dark:text-emerald-300">
@@ -175,8 +177,8 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
 
             <div className="p-4 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-500/30">
               <div className="flex items-center justify-center gap-1.5 text-red-700 dark:text-red-400 mb-1">
-                <XCircle className="w-4 h-4" />
-                <span className="text-xs font-bold uppercase">Para la próxima</span>
+                <X className="w-4 h-4 stroke-[3]" />
+                <span className="text-xs font-bold uppercase">Para repasar</span>
               </div>
               <span className="text-2xl font-black text-red-700 dark:text-red-300">
                 {perdidoCount} / {totalCards}
@@ -339,39 +341,49 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
         </div>
       </div>
 
-      {/* Bottom Controls Bar: Rating Buttons & Navigation Arrows */}
-      <div className="flex items-center justify-between gap-3 pt-2">
+      {/* Bottom Controls Bar: Rating Buttons (Simplified with X and Chulo/Check) & Navigation Arrows */}
+      <div className="flex items-center justify-between gap-2.5 sm:gap-3 pt-2">
         {/* Navigation Arrow Left */}
         <button
           onClick={handlePrev}
           disabled={currentIndex === 0}
-          className="w-12 h-12 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1a1f2c] text-slate-700 dark:text-slate-200 flex items-center justify-center transition active:scale-95 disabled:opacity-30 disabled:pointer-events-none hover:border-blue-500 dark:hover:border-cyan-400"
+          className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1a1f2c] text-slate-700 dark:text-slate-200 flex items-center justify-center transition active:scale-95 disabled:opacity-30 disabled:pointer-events-none hover:border-blue-500 dark:hover:border-cyan-400 flex-shrink-0"
           title="Tarjeta anterior"
           aria-label="Tarjeta anterior"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
 
-        {/* Rating Button: "Para la próxima" (Sad face / Not understood) */}
+        {/* Rating Button: "X" (No aprendido / Para repasar) */}
         <button
           onClick={() => handleRateCard('perdido')}
-          className="flex-1 py-3 px-3 sm:px-4 rounded-2xl bg-white dark:bg-[#1a1f2c] border-2 border-red-300 dark:border-red-500/40 hover:bg-red-50 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition active:scale-95 shadow-sm"
+          className={`flex-1 py-3 px-3 rounded-2xl bg-white dark:bg-[#1a1f2c] border-2 transition active:scale-95 shadow-sm flex items-center justify-center gap-2 ${
+            currentStatus === 'perdido'
+              ? 'border-red-500 bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-400 ring-2 ring-red-400/30'
+              : 'border-red-300 dark:border-red-500/40 hover:bg-red-50 dark:hover:bg-red-950/40 text-red-600 dark:text-red-400'
+          }`}
+          title="Marcar con X (Para repasar)"
+          aria-label="Marcar con X (No aprendido)"
         >
-          <span className="text-base sm:text-lg">🙁</span>
-          <span className="truncate">Para la próxima</span>
-          <span className="text-xs px-1.5 py-0.5 rounded-md bg-red-100 dark:bg-red-900/60 font-mono">
+          <X className="w-6 h-6 stroke-[3]" />
+          <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/60 text-red-700 dark:text-red-300">
             {perdidoCount}
           </span>
         </button>
 
-        {/* Rating Button: "Entendido" (Happy face / Understood) */}
+        {/* Rating Button: "Chulo" / Check (Entendido / Aprendido) */}
         <button
           onClick={() => handleRateCard('entendido')}
-          className="flex-1 py-3 px-3 sm:px-4 rounded-2xl bg-white dark:bg-[#1a1f2c] border-2 border-emerald-300 dark:border-emerald-500/40 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition active:scale-95 shadow-sm"
+          className={`flex-1 py-3 px-3 rounded-2xl bg-white dark:bg-[#1a1f2c] border-2 transition active:scale-95 shadow-sm flex items-center justify-center gap-2 ${
+            currentStatus === 'entendido'
+              ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 ring-2 ring-emerald-400/30'
+              : 'border-emerald-300 dark:border-emerald-500/40 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400'
+          }`}
+          title="Marcar con Chulo (Entendido)"
+          aria-label="Marcar con Chulo (Entendido)"
         >
-          <span className="text-base sm:text-lg">😊</span>
-          <span className="truncate">Entendido</span>
-          <span className="text-xs px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-900/60 font-mono">
+          <Check className="w-6 h-6 stroke-[3]" />
+          <span className="text-xs font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300">
             {entendidoCount}
           </span>
         </button>
@@ -379,7 +391,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
         {/* Navigation Arrow Right */}
         <button
           onClick={handleNext}
-          className="w-12 h-12 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1a1f2c] text-slate-700 dark:text-slate-200 flex items-center justify-center transition active:scale-95 hover:border-blue-500 dark:hover:border-cyan-400"
+          className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-[#1a1f2c] text-slate-700 dark:text-slate-200 flex items-center justify-center transition active:scale-95 hover:border-blue-500 dark:hover:border-cyan-400 flex-shrink-0"
           title={currentIndex + 1 < totalCards ? 'Siguiente tarjeta' : 'Finalizar mazo'}
           aria-label="Siguiente tarjeta"
         >

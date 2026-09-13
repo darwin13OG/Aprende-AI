@@ -263,35 +263,50 @@ app.post('/api/generate', async (req, res) => {
       }
     }
 
+    const sourceCount = Math.max(1, inputSourcesList.length);
+
     const promptInstruction = `
 Actúa como un Diseñador Instruccional Senior y Motor de Aprendizaje Profundo ("Aprende AI"), con la profundidad y rigor de Google NotebookLM.
 Tu objetivo es analizar minuciosamente las fuentes proporcionadas por el usuario (documentos, páginas web, transcripciones de YouTube, imágenes o apuntes) y sintetizarlas en un paquete de estudio interactivo de alto rendimiento.
 
 Tema de referencia: ${effectiveTopic}
 Instrucción o retroalimentación del usuario: ${promptText || 'Genera una experiencia de aprendizaje completa, rigurosa y adaptada a la profundidad de las fuentes.'}
+Cantidad de fuentes activas: ${sourceCount}
 
 ${sourcesTextContext ? `CONTENIDO EXTRAÍDO DE LAS FUENTES:\n${sourcesTextContext}` : ''}
 
-ESCALA DINÁMICA DE CONTENIDO SEGÚN LA DENSIDAD DEL MATERIAL:
-- Si las fuentes adjuntas son ricas o extensas (documentos con varias páginas, páginas web completas, múltiples apuntes o videos):
-  * Cuestionario (quiz): Genera entre 8 y 18 preguntas desafiantes y contextualizadas que exploren a fondo todos los conceptos, causas, efectos y aplicaciones prácticas.
-  * Flashcards: Genera entre 10 y 25 fichas didácticas que desglosen conceptos cruciales, distinciones finas y datos clave.
-  * Mapa Mental (mindmap): Genera un mapa conceptual expansivo con entre 5 y 8 ramas principales ("subnodos"), cada una con entre 3 y 5 puntos clave en "detalles".
-- Si el material es corto o puntual:
-  * Cuestionario: Al menos 5 a 8 preguntas esenciales.
-  * Flashcards: Al menos 6 a 12 fichas de estudio.
-  * Mapa Mental: De 4 a 6 ramas estructurales.
+REGLAS DE REPARTO INTELIGENTE DEL MAPA MENTAL (MINDMAP CON INFORMACIÓN REAL):
+1. El mapa mental DEBE entregar información sustancial y conocimiento didáctico profundo, no solo etiquetas vacías.
+2. Cada rama principal ("subnodos") DEBE incluir:
+   - "titulo": Concepto claro y preciso.
+   - "categoria": Área o dimensión temática.
+   - "descripcion": Explicación y síntesis didáctica completa (2 a 4 oraciones) que explique a fondo el concepto, cómo opera, su relevancia y sus puntos críticos derivados de las fuentes.
+   - "detalles": Array con sub-conceptos, reglas, fórmulas, distinciones o procesos explicados con claridad.
+3. La IA decide autónomamente cuántas ramas principales ("subnodos") necesita el tema según la densidad real de información (típicamente entre 4 y 8 ramas principales).
+4. PARA CADA RAMA PRINCIPAL, LA IA DECIDE SI DEBE TENER SUB-RAMAS ("detalles"), CUÁNTAS Y SI SÍ O NO:
+   - Si una rama es un concepto directo, puntual o atómico: puede tener 0 sub-ramas ("detalles": []) o 1 punto conciso.
+   - Si una rama abarca un pilar amplio, fórmulas, clasificaciones o reglas operativas: la IA le asigna de 2 a 5 sub-ramas en "detalles" que aporten conocimiento real y explicativo.
+5. El título "nodoPrincipal" del mindmap debe ser el nombre temático real del contenido.
+
+ESCALA DINÁMICA DE CONTENIDO SEGÚN LA CANTIDAD Y RIQUEZA DE FUENTES:
+${
+  sourceCount >= 2
+    ? `- Fuentes activas múltiples (${sourceCount}): Cruza activamente los conceptos entre las diferentes fuentes.
+  * Cuestionario (quiz): Entre 10 y 18 preguntas desafiantes y contextualizadas con explicaciones profundas.
+  * Flashcards: Entre 14 y 24 fichas didácticas que abarquen todos los ángulos de las fuentes integradas.`
+    : `- Fuente base única (o tema puntual): Estructura equilibrada, precisa y clara sin sobrecargar.
+  * Cuestionario (quiz): De 5 a 8 preguntas esenciales.
+  * Flashcards: De 8 a 14 fichas de estudio claras.`
+}
 
 REGLAS DE ESTRUCTURA Y CALIDAD:
-1. El título "nodoPrincipal" del mindmap debe ser el nombre temático real del contenido analizado.
-2. Cuestionario (quiz): Cada pregunta debe tener 4 opciones ("opciones"), el índice numérico de la opción correcta (0, 1, 2 o 3) en "correcta", y una "explicacion" didáctica convincente.
-3. Flashcards:
+1. Cuestionario (quiz): Cada pregunta debe tener 4 opciones ("opciones"), el índice numérico de la opción correcta (0, 1, 2 o 3) en "correcta", y una "explicacion" didáctica convincente.
+2. Flashcards:
    - "concepto": Pregunta estimulante y directa para el estudiante (ejemplo: "¿Cómo influye el gradiente de concentración en...?").
    - "definicion": Explicación didáctica completa que responde a la pregunta cuando el usuario toca la tarjeta.
    - "subtitulo": Categoría o etiqueta conceptual breve.
    - "ejemplo": Caso práctico o analogía breve.
-4. Mapa Mental (mindmap): Ramas del conocimiento con "titulo", "categoria", "detalles" (array de puntos clave) y "tags".
-5. Todo el contenido debe ser riguroso, en español impecable, sin inventar hechos que contradigan las fuentes.
+3. Todo el contenido debe ser riguroso, en español impecable, sin inventar hechos que contradigan las fuentes.
 
 Debes devolver EXCLUSIVAMENTE un esquema JSON válido.
 `;
@@ -344,6 +359,7 @@ Debes devolver EXCLUSIVAMENTE un esquema JSON válido.
                   properties: {
                     titulo: { type: Type.STRING },
                     categoria: { type: Type.STRING },
+                    descripcion: { type: Type.STRING },
                     detalles: {
                       type: Type.ARRAY,
                       items: { type: Type.STRING },
