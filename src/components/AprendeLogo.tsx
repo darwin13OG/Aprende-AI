@@ -95,10 +95,10 @@ export const AprendeLogo: React.FC<AprendeLogoProps> = ({
       {showText && (
         <div className="flex flex-col text-left leading-tight">
           <div className="flex items-center gap-1">
-            <span className="font-extrabold tracking-tight text-white font-['Plus_Jakarta_Sans'] text-base md:text-lg">
+            <span className="font-extrabold tracking-tight text-slate-900 dark:text-white font-['Plus_Jakarta_Sans'] text-base md:text-lg transition-colors">
               Aprende
             </span>
-            <span className="font-extrabold tracking-tight text-cyan-400 font-['Plus_Jakarta_Sans'] text-base md:text-lg drop-shadow-[0_0_8px_rgba(0,210,255,0.7)]">
+            <span className="font-extrabold tracking-tight text-blue-600 dark:text-cyan-400 font-['Plus_Jakarta_Sans'] text-base md:text-lg drop-shadow-[0_0_8px_rgba(0,210,255,0.4)]">
               AI
             </span>
           </div>

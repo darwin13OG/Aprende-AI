@@ -19,6 +19,7 @@ import {
   parseSharedPayloadFromUrl,
   fetchSharedPayloadById,
 } from './utils/shareUtils.ts';
+import { safeFetchJson } from './utils/apiUtils.ts';
 
 const STORAGE_KEY = 'aprende_ai_entornos_v3';
 
@@ -269,7 +270,7 @@ export default function App() {
     setQuotaExhausted(false);
 
     try {
-      const response = await fetch('/api/generate', {
+      const res = await safeFetchJson('/api/generate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -283,7 +284,13 @@ export default function App() {
         }),
       });
 
-      const data = await response.json();
+      if (!res.ok || res.error) {
+        throw new Error(
+          res.error || 'Error al procesar la solicitud con el servidor.'
+        );
+      }
+
+      const data = res.data;
 
       if (data.quotaExhausted) {
         setQuotaExhausted(true);
@@ -291,7 +298,7 @@ export default function App() {
         return;
       }
 
-      if (!response.ok || !data.success) {
+      if (!data.success) {
         throw new Error(data.message || 'Error al procesar la solicitud con Gemini.');
       }
 

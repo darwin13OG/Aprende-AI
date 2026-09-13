@@ -229,7 +229,8 @@ export function parseSharedPayloadFromUrl(): SharedPayload | null {
 export async function fetchSharedPayloadById(id: string): Promise<SharedPayload | null> {
   try {
     const res = await fetch(`/api/experiences/${id}`);
-    if (res.ok) {
+    const contentType = res.headers.get('content-type') || '';
+    if (res.ok && contentType.includes('application/json')) {
       const data = await res.json();
       if (data.success && data.experience) {
         return data.experience as SharedPayload;

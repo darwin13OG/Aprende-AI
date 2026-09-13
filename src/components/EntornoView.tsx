@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MathMarkdown } from './MathMarkdown.tsx';
 import { Entorno, Fuente, ActiveTab, ChatMessage } from '../types.ts';
+import { safeFetchJson } from '../utils/apiUtils.ts';
 import {
   Sparkles,
   Paperclip,
@@ -140,14 +141,18 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
     setUrlError(null);
 
     try {
-      const res = await fetch('/api/extract-url', {
+      const res = await safeFetchJson('/api/extract-url', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: urlInput.trim() }),
       });
 
-      const data = await res.json();
-      if (!res.ok || !data.success) {
+      if (!res.ok || res.error) {
+        throw new Error(res.error || 'No se pudo extraer contenido de la URL.');
+      }
+
+      const data = res.data;
+      if (!data.success) {
         throw new Error(data.message || 'No se pudo extraer contenido de la URL.');
       }
 
@@ -243,7 +248,7 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
     setIsSendingMessage(true);
 
     try {
-      const response = await fetch('/api/chat', {
+      const res = await safeFetchJson('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -258,9 +263,13 @@ export const EntornoView: React.FC<EntornoViewProps> = ({
         }),
       });
 
-      const data = await response.json();
+      if (!res.ok || res.error) {
+        throw new Error(res.error || 'Error al comunicarse con el tutor de IA.');
+      }
 
-      if (!response.ok || !data.success) {
+      const data = res.data;
+
+      if (!data.success) {
         if (data.quotaExhausted) {
           setShowKeyCard(true);
         }
